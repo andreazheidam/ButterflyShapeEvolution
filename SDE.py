@@ -3,13 +3,13 @@
 import jax
 import jax.numpy as jnp
 
-# for 2d + 3d cases with factorizable matrices
-# multiply on the factorized matrix, e.g. covariance matrix
+# Covariance matrix
 dot = lambda A,v: jnp.einsum('ij,jd->id',A,v.reshape((A.shape[0],-1))).flatten()
-# multiple on inverse factorized matrix, e.g. inverse covariance matrix
+
+# Inverse covariance matrix
 solve = lambda A,v: jnp.linalg.solve(A,v.reshape((A.shape[0],-1))).flatten()
 
-# time increments
+# Time increments
 def dts(T=1.,n_steps=100):
     return jnp.array([T/n_steps]*n_steps)
 
@@ -25,7 +25,7 @@ def forward(x,dts,dWs,b,sigma,params):
         
         return((tp1,Xtp1),(t,X))    
 
-    # sample
+    # Sample
     (T,X), (ts,Xs) = jax.lax.scan(SDE,(0.,x),(dts,dWs))
     Xs = jnp.vstack((Xs,X))
     return Xs
